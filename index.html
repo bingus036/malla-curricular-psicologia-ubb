@@ -2,144 +2,168 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Malla Curricular Psicología</title>
 
   <style>
     :root {
-      --clinica: #fde2e4;
-      --educacional: #e2f0cb;
-      --social: #e0f4ff;
-      --metodologia: #ede7f6;
-      --general: #fff1c1;
+      --basica: #fff1c1;
+      --disciplinaria: #e0f4ff;
+      --practica: #fde2e4;
+      --integral: #e2f0cb;
+      --electivos: #ede7f6;
       --aprobado: #b7e4c7;
       --fondo: #faf7ff;
+      --texto: #333;
+      --card: rgba(255,255,255,0.85);
+    }
+
+    body.dark {
+      --fondo: #1f1f2b;
+      --texto: #f3f4f6;
+      --card: rgba(40,40,60,0.85);
     }
 
     body {
-      font-family: "Poppins", "Segoe UI", sans-serif;
+      font-family: "Poppins","Segoe UI",sans-serif;
       background: var(--fondo);
+      color: var(--texto);
       padding: 20px;
-      color: #333;
+      transition: background 0.4s, color 0.4s;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 5px;
+    h1,h2 { text-align: center; }
+    h2 { font-weight: 400; font-size: 0.95em; opacity: .8; }
+
+    .toggle {
+      display:flex;
+      justify-content:center;
+      margin: 20px 0;
     }
 
-    h2 {
-      text-align: center;
-      font-weight: 400;
-      font-size: 0.95em;
-      margin-bottom: 25px;
-      color: #666;
+    .toggle button {
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      cursor:pointer;
+      background: linear-gradient(90deg,#cdb4db,#ffc8dd);
+      transition: transform .2s;
     }
 
-    /* PROGRESO */
+    .toggle button:hover { transform: scale(1.05); }
+
     .progress-container {
-      max-width: 900px;
+      max-width:900px;
       margin: 0 auto 35px;
     }
 
     .progress-bar {
-      height: 20px;
-      background: #e5e7eb;
-      border-radius: 999px;
-      overflow: hidden;
+      height:20px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
     }
 
     .progress {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #cdb4db, #ffc8dd, #ffafcc);
-      transition: width 0.3s;
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg,#cdb4db,#ffc8dd,#ffafcc);
+      transition: width .4s;
     }
 
-    /* SEMESTRES */
     .semesters {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 28px;
-      max-width: 1400px;
-      margin: auto;
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap:26px;
+      max-width:1500px;
+      margin:auto;
     }
 
     .semester {
-      background: rgba(255,255,255,0.75);
-      backdrop-filter: blur(6px);
-      border-radius: 22px;
-      padding: 18px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border-radius:24px;
+      padding:18px;
+      box-shadow: 0 8px 22px rgba(0,0,0,.08);
+      animation: fadeIn .6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(8px); }
+      to { opacity:1; transform: translateY(0); }
     }
 
     .semester h3 {
-      text-align: center;
-      margin-bottom: 14px;
-      font-size: 1em;
+      text-align:center;
+      margin-bottom:14px;
     }
 
-    /* RAMOS */
     .course {
-      border-radius: 18px;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-      position: relative;
+      border-radius:18px;
+      padding:12px 14px;
+      margin-bottom:12px;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(0,0,0,.08);
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+      position:relative;
     }
 
     .course:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
     }
 
-    .course.completed {
-      background: var(--aprobado) !important;
+    .course.completed { background: var(--aprobado) !important; }
+    .course.locked { opacity:.4; cursor:not-allowed; }
+
+    .credits { font-size:.75em; margin-top:6px; }
+
+    .tooltip {
+      position:absolute;
+      bottom:110%;
+      left:50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.75);
+      color:#fff;
+      padding:6px 10px;
+      border-radius:10px;
+      font-size:.7em;
+      white-space:nowrap;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s, transform .2s;
     }
 
-    .course.locked {
-      opacity: 0.4;
-      cursor: not-allowed;
+    .course:hover .tooltip {
+      opacity:1;
+      transform: translate(-50%,-4px);
     }
 
-    .credits {
-      font-size: 0.75em;
-      margin-top: 6px;
-    }
-
-    .tag {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 0.65em;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.65);
-    }
-
-    /* LEYENDA */
     .legend {
-      max-width: 900px;
-      margin: 35px auto 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      font-size: 0.8em;
+      max-width:1000px;
+      margin:35px auto 10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      font-size:.8em;
     }
 
     .legend span {
-      padding: 6px 12px;
-      border-radius: 999px;
+      padding:6px 12px;
+      border-radius:999px;
     }
   </style>
 </head>
+
 <body>
 
 <h1>🧠 Psicología</h1>
 <h2>Malla curricular · 10 semestres · Créditos SCT</h2>
+
+<div class="toggle">
+  <button onclick="toggleDark()">🌙 Modo oscuro</button>
+</div>
 
 <div class="progress-container">
   <div class="progress-bar">
@@ -150,114 +174,94 @@
 <div class="semesters" id="semesters"></div>
 
 <div class="legend">
-  <span style="background:var(--clinica)">🩷 Clínica</span>
-  <span style="background:var(--educacional)">💚 Educacional</span>
-  <span style="background:var(--social)">💙 Social</span>
-  <span style="background:var(--metodologia)">💜 Metodología</span>
-  <span style="background:var(--general)">💛 General</span>
+  <span style="background:var(--basica)">💛 Formación Básica</span>
+  <span style="background:var(--disciplinaria)">💙 Formación Disciplinaria</span>
+  <span style="background:var(--practica)">🩷 Formación Práctica</span>
+  <span style="background:var(--integral)">💚 Formación Integral</span>
+  <span style="background:var(--electivos)">💜 Electivos</span>
 </div>
 
 <script>
-  const courses = [
-    // SEMESTRE 1
-    { id: 1, name: "Introducción a la Psicología", semester: 1, credits: 6, area: "general", prereq: [] },
-    { id: 2, name: "Bases Biológicas del Comportamiento", semester: 1, credits: 6, area: "general", prereq: [] },
+const courses = [
+  {id:1,name:"Historia y Fundamentos de la Psicología",semester:1,credits:6,area:"basica",prereq:[]},
+  {id:2,name:"Psicobiología",semester:1,credits:7,area:"basica",prereq:[]},
+  {id:3,name:"Taller de Desarrollo Personal I",semester:1,credits:3,area:"basica",prereq:[]},
+  {id:4,name:"Socioantropología",semester:1,credits:6,area:"basica",prereq:[]},
+  {id:5,name:"Procesos Psicológicos",semester:1,credits:6,area:"basica",prereq:[]},
+  {id:6,name:"Oferta Institucional",semester:1,credits:2,area:"integral",prereq:[]},
 
-    // SEMESTRE 2
-    { id: 3, name: "Psicología del Desarrollo I", semester: 2, credits: 6, area: "educacional", prereq: [1] },
-    { id: 4, name: "Metodología de la Investigación I", semester: 2, credits: 5, area: "metodologia", prereq: [1] },
+  {id:7,name:"Epistemología",semester:2,credits:6,area:"basica",prereq:[]},
+  {id:8,name:"Neuropsicología",semester:2,credits:7,area:"basica",prereq:[]},
+  {id:9,name:"Taller de Desarrollo Personal II",semester:2,credits:3,area:"basica",prereq:[]},
+  {id:10,name:"Teoría y Sistemas Psicológicos",semester:2,credits:6,area:"basica",prereq:[]},
+  {id:11,name:"Psicología del Desarrollo I",semester:2,credits:6,area:"disciplinaria",prereq:[5]},
+  {id:12,name:"Oferta Institucional",semester:2,credits:2,area:"integral",prereq:[]},
 
-    // SEMESTRE 3
-    { id: 5, name: "Psicología Social I", semester: 3, credits: 6, area: "social", prereq: [1] },
-    { id: 6, name: "Estadística para Psicología", semester: 3, credits: 5, area: "metodologia", prereq: [4] },
+  {id:13,name:"Ética Profesional",semester:3,credits:3,area:"basica",prereq:[]},
+  {id:14,name:"Psicoestadística",semester:3,credits:5,area:"basica",prereq:[]},
+  {id:15,name:"Psicología de la Personalidad",semester:3,credits:6,area:"disciplinaria",prereq:[]},
+  {id:16,name:"Psicología Social I",semester:3,credits:5,area:"disciplinaria",prereq:[]},
+  {id:17,name:"Psicología del Desarrollo II",semester:3,credits:6,area:"disciplinaria",prereq:[11]},
+  {id:18,name:"Inglés Comunicacional I",semester:3,credits:4,area:"integral",prereq:[]},
 
-    // SEMESTRE 4
-    { id: 7, name: "Psicología del Desarrollo II", semester: 4, credits: 6, area: "educacional", prereq: [3] },
-    { id: 8, name: "Metodología de la Investigación II", semester: 4, credits: 5, area: "metodologia", prereq: [4] },
+  {id:19,name:"Evaluación de Procesos Socioafectivos",semester:4,credits:5,area:"disciplinaria",prereq:[15]},
+  {id:20,name:"Evaluación de Procesos Cognitivos",semester:4,credits:5,area:"disciplinaria",prereq:[14]},
+  {id:21,name:"Psicología de la Familia",semester:4,credits:5,area:"disciplinaria",prereq:[]},
+  {id:22,name:"Psicología Social II",semester:4,credits:6,area:"disciplinaria",prereq:[16]},
+  {id:23,name:"Psicología Clínica",semester:4,credits:6,area:"disciplinaria",prereq:[15,17]},
+  {id:24,name:"Inglés Comunicacional II",semester:4,credits:4,area:"integral",prereq:[18]},
+];
 
-    // SEMESTRE 5
-    { id: 9, name: "Psicología Social II", semester: 5, credits: 6, area: "social", prereq: [5] },
-    { id: 10, name: "Evaluación Psicológica I", semester: 5, credits: 6, area: "clinica", prereq: [7] },
+let completed = JSON.parse(localStorage.getItem("completed")||"[]");
 
-    // SEMESTRE 6
-    { id: 11, name: "Evaluación Psicológica II", semester: 6, credits: 6, area: "clinica", prereq: [10] },
-    { id: 12, name: "Psicopatología I", semester: 6, credits: 7, area: "clinica", prereq: [7] },
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
 
-    // SEMESTRE 7
-    { id: 13, name: "Psicopatología II", semester: 7, credits: 7, area: "clinica", prereq: [12] },
-    { id: 14, name: "Psicología Educacional", semester: 7, credits: 6, area: "educacional", prereq: [7] },
+function canUnlock(course){
+  return course.prereq.every(p => completed.includes(p));
+}
 
-    // SEMESTRE 8
-    { id: 15, name: "Intervención Clínica I", semester: 8, credits: 7, area: "clinica", prereq: [13] },
-    { id: 16, name: "Psicología Comunitaria", semester: 8, credits: 6, area: "social", prereq: [9] },
+function render(){
+  const container = document.getElementById("semesters");
+  container.innerHTML = "";
+  for(let s=1;s<=10;s++){
+    const box = document.createElement("div");
+    box.className="semester";
+    box.innerHTML=`<h3>Semestre ${s}</h3>`;
+    courses.filter(c=>c.semester===s).forEach(c=>{
+      const div=document.createElement("div");
+      div.className="course";
+      div.style.background=`var(--${c.area})`;
+      if(!canUnlock(c)&&!completed.includes(c.id)) div.classList.add("locked");
+      if(completed.includes(c.id)) div.classList.add("completed");
 
-    // SEMESTRE 9
-    { id: 17, name: "Intervención Clínica II", semester: 9, credits: 7, area: "clinica", prereq: [15] },
-    { id: 18, name: "Ética Profesional", semester: 9, credits: 4, area: "general", prereq: [] },
+      div.onclick=()=>{
+        if(div.classList.contains("locked")) return;
+        completed.includes(c.id)
+          ? completed=completed.filter(i=>i!==c.id)
+          : completed.push(c.id);
+        localStorage.setItem("completed",JSON.stringify(completed));
+        render();
+      };
 
-    // SEMESTRE 10
-    { id: 19, name: "Práctica Profesional", semester: 10, credits: 12, area: "clinica", prereq: [17] },
-    { id: 20, name: "Seminario de Título", semester: 10, credits: 8, area: "metodologia", prereq: [8] }
-  ];
-
-  const semestersDiv = document.getElementById("semesters");
-  const progressBar = document.getElementById("progress");
-  let completed = JSON.parse(localStorage.getItem("completed")) || [];
-
-  function canUnlock(course) {
-    return course.prereq.every(p => completed.includes(p));
+      div.innerHTML=`
+        ${c.name}
+        <div class="credits">${c.credits} SCT</div>
+        ${c.prereq.length?`<div class="tooltip">Prerrequisito pendiente</div>`:""}
+      `;
+      box.appendChild(div);
+    });
+    container.appendChild(box);
   }
 
-  function updateProgress() {
-    const totalCredits = courses.reduce((s, c) => s + c.credits, 0);
-    const doneCredits = courses.filter(c => completed.includes(c.id)).reduce((s, c) => s + c.credits, 0);
-    progressBar.style.width = (doneCredits / totalCredits) * 100 + "%";
-    progressBar.title = `${doneCredits} / ${totalCredits} SCT`;
-  }
+  const total=courses.reduce((s,c)=>s+c.credits,0);
+  const done=courses.filter(c=>completed.includes(c.id)).reduce((s,c)=>s+c.credits,0);
+  document.getElementById("progress").style.width=(done/total*100)+"%";
+}
 
-  function render() {
-    semestersDiv.innerHTML = "";
-
-    for (let s = 1; s <= 10; s++) {
-      const sem = document.createElement("div");
-      sem.className = "semester";
-      sem.innerHTML = `<h3>Semestre ${s}</h3>`;
-
-      courses.filter(c => c.semester === s).forEach(course => {
-        const div = document.createElement("div");
-        div.className = "course";
-        div.style.background = `var(--${course.area})`;
-
-        if (!canUnlock(course)) div.classList.add("locked");
-        if (completed.includes(course.id)) div.classList.add("completed");
-
-        div.innerHTML = `
-          <strong>${course.name}</strong>
-          <div class="credits">${course.credits} SCT</div>
-          <span class="tag">${course.area}</span>
-        `;
-
-        div.onclick = () => {
-          if (!canUnlock(course)) return;
-          completed = completed.includes(course.id)
-            ? completed.filter(id => id !== course.id)
-            : [...completed, course.id];
-          localStorage.setItem("completed", JSON.stringify(completed));
-          render();
-          updateProgress();
-        };
-
-        sem.appendChild(div);
-      });
-
-      semestersDiv.appendChild(sem);
-    }
-  }
-
-  render();
-  updateProgress();
+render();
 </script>
 
 </body>
 </html>
-
